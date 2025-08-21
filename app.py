@@ -43,18 +43,18 @@ os.makedirs('tmp', exist_ok=True)
 yt_urls = ['https://www.youtube.com/watch?v=Uqp-pzGMjlU']
 url = yt_urls[0]
 
-# Получаем имя файла
+# Забираем имя 
 file_name = subprocess.run(
     ['yt-dlp', url, '-f', 'bestaudio[ext=m4a]', '--get-filename', '-o', 'tmp/%(title)s.m4a'],
     capture_output=True, text=True
 ).stdout.strip()
 
-# Загружаем аудио
+# грузим аудио
 subprocess.run(
     ['yt-dlp', url, '-f', 'bestaudio[ext=m4a]', '-o', 'tmp/%(title)s.m4a']
 )
 
-print(f"Файл сохранен как: {file_name}")
+print(f"имя файла: {file_name}")
 
 
 
@@ -90,9 +90,8 @@ def transcribe_audio_whisper_chunked(audio_path, file_title, save_folder_path, m
         with open(chunk_path, "rb") as src_file:
             print(f"Transcribing {chunk_name}...")
             try:
-                # Вызов API для транскрибации
                 transcription = client.audio.transcriptions.create(model="whisper-1", file=src_file)
-                transcriptions.append(transcription.text)  # Используем атрибут .text для получения текста
+                transcriptions.append(transcription.text)  
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break
@@ -110,26 +109,22 @@ def transcribe_audio_whisper_chunked(audio_path, file_title, save_folder_path, m
     
     print(f"Transcription saved to {result_path}")
 
-
-# Задаем исходные параметры и вызываем функцию
 audio_path = 'Графы： алгоритмы и структуры данных на Python.m4a'
 file_title = 'Графы_Алгоритмы_и_Структуры_Данных_на_Python'
 save_folder_path = 'C:\\Users\\Evgenii\\Desktop\\bot_rezumer_video'
 
-# Вызов функции для транскрибации аудиофайла
 # transcribe_audio_whisper_chunked(audio_path, file_title, save_folder_path)
 
 
 
 
 
-system = 'Вы гений текста, копирайтинга, писательства. Ваша задача распознать разделы в тексте и разбить его на эти разделы сохраняя весь текст на 100%'
+system = 'Ты гений текста, копирайтинга, писательства. Ваша задача распознать разделы в тексте и разбить его на эти разделы сохраняя весь текст на 100%'
 user = 'Пожалуйста, давайте подумаем шаг за шагом: Подумайте, какие разделы в тексте вы можете распознать и какое название по смыслу можно дать каждому разделу. Далее напишите ответ по всему предыдущему ответу в порядке: ## Название раздела, после чего весь текст, относящийся к этому разделу. Текст:' 
 
 temperature = 0
 chunk_size = 6000 
 
-# Функция дробления текста на чанки
 def split_text(txt_file, chunk_size=chunk_size):
     source_chunks = []
     splitter = RecursiveCharacterTextSplitter(separators=['\n', '\n\n', '. '], chunk_size=chunk_size, chunk_overlap=0)
@@ -221,7 +216,7 @@ markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_sp
 md_header_splits = markdown_splitter.split_text(processed_text)
 print(len(md_header_splits))
 
-system1 = "Вы гений копирайтинга, эксперт в программировании на пайтон и в теме Графы, алгоритмы и структуры данных. Вы получаете раздел необработанного текста по определенной теме. Нужно из этого текста выделить самую суть, только самое важное, сохранив все нужные подробности и детали, но убрав всю (воду) и слова (предложения), не несущие смысловой нагрузки." 
+system1 = "Ты гений копирайтинга, эксперт в программировании на пайтон и в теме Графы, алгоритмы и структуры данных. Вы получаете раздел необработанного текста по определенной теме. Нужно из этого текста выделить самую суть, только самое важное, сохранив все нужные подробности и детали, но убрав всю (воду) и слова (предложения), не несущие смысловой нагрузки." 
 user1 = "Из данного текста выдели только ценную с точки зрения темы (графы, алгоритмы и структуры данных) информацию. Удали всю (воду). В итоге у тебя должен получится раздел для методички по указанной теме. Опирайся только на данный тебе текст, не придумывай ничего от себя. Ответ нужен в формате ## Название раздела, и далее выделенная тобой ценная информация из текста. Если в тексте не содержится ценной информации, то оставь только  название раздела, например:"
 
 temperature1 = 0 
@@ -309,4 +304,5 @@ def answer_neuro_assist(system_for_NA, topic, search_index):
 
 topic="Что такое графы"
 ans=answer_neuro_assist(system_for_NA, topic, db)
+
 print(ans)
